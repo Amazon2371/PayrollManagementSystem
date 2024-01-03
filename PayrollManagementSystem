@@ -1,0 +1,242 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Employee {
+    int id;
+    char name[50];
+    int age;
+    char address[100];
+    char phone[12];
+    float salaryRate;
+};
+
+struct Employee employees[50];
+int employeeCount = 0;
+
+int employeeId;
+int overtimeHours;
+int absences;
+float grossPay;
+float deductions;
+float adjustments;
+float netPay;
+int searchId;
+int i;
+char searchName[50];
+struct Employee newEmployee;
+int choice;
+char fileName[50];
+
+void calculateSalary() {
+    printf("Calculating monthly salary...\n");
+
+    printf("Enter employee ID: ");
+    scanf("%d", &employeeId);
+
+    for (i = 0; i < employeeCount; i++) {
+        if (employees[i].id == employeeId) {
+            printf("Enter overtime hours: ");
+            scanf("%d", &overtimeHours);
+
+            printf("Enter number of absences: ");
+            scanf("%d", &absences);
+
+            grossPay = employees[i].salaryRate * (30 - absences) + (overtimeHours * employees[i].salaryRate * 1.5);
+
+            deductions = grossPay * 0.12;
+
+            adjustments = 0.0;
+
+            netPay = grossPay - deductions + adjustments;
+
+            printf("Employee ID: %d\n", employees[i].id);
+            printf("Employee Name: %s\n", employees[i].name);
+            printf("Gross Pay: %.2f\n", grossPay);
+            printf("Deductions: %.2f\n", deductions);
+            printf("Adjustments: %.2f\n", adjustments);
+            printf("Net Pay: %.2f\n", netPay);
+
+            return;
+        }
+    }
+
+    printf("Employee not found.\n");
+}
+
+void addEmployee() {
+    printf("Adding new employee...\n");
+
+    printf("Enter employee ID: ");
+    scanf("%d", &newEmployee.id);
+    printf("Enter employee name: ");
+    scanf(" %[^\n]s", newEmployee.name);
+    printf("Enter employee age: ");
+    scanf("%d", &newEmployee.age);
+    printf("Enter employee address: ");
+    scanf(" %[^\n]s", newEmployee.address);
+    printf("Enter employee phone number: ");
+    scanf(" %[^\n]s", newEmployee.phone);
+    printf("Enter employee salary rate per day: ");
+    scanf("%f", &newEmployee.salaryRate);
+
+    employees[employeeCount] = newEmployee;
+    employeeCount++;
+
+    printf("New employee added successfully.\n");
+}
+
+void updateEmployee() {
+    printf("Updating employee information...\n");
+
+    printf("Enter employee ID: ");
+    scanf("%d", &employeeId);
+
+    for (i = 0; i < employeeCount; i++) {
+        if (employees[i].id == employeeId) {
+            printf("Enter updated employee name: ");
+            scanf(" %[^\n]s", employees[i].name);
+            printf("Enter updated employee age: ");
+            scanf("%d", &employees[i].age);
+            printf("Enter updated employee address: ");
+            scanf(" %[^\n]s", employees[i].address);
+            printf("Enter updated employee phone number: ");
+            scanf(" %[^\n]s", employees[i].phone);
+            printf("Enter updated employee salary rate per day: ");
+            scanf("%f", &employees[i].salaryRate);
+            printf("Employee information updated successfully.\n");
+            return;
+        }
+    }
+
+    printf("Employee not found.\n");
+}
+
+void searchEmployee() {
+    printf("Searching for employee...\n");
+
+    printf("Enter employee ID or Lastname: ");
+    scanf("%d %[^\n]s", &searchId, searchName);
+
+    for (i = 0; i < employeeCount; i++) {
+        if (employees[i].id == searchId || strcmp(employees[i].name, searchName) == 0) {
+            printf("Employee ID: %d\n", employees[i].id);
+            printf("Employee Name: %s\n", employees[i].name);
+            printf("Employee Age: %d\n", employees[i].age);
+            printf("Employee Address: %s\n", employees[i].address);
+            printf("Employee Phone: %s\n", employees[i].phone);
+            printf("Employee Salary Rate per Day: %.2f\n", employees[i].salaryRate);
+            return;
+        }
+    }
+
+    printf("Employee not found.\n");
+}
+
+void deleteEmployee() {
+    printf("Deleting employee...\n");
+
+    printf("Enter employee ID: ");
+    scanf("%d", &employeeId);
+
+    for (i = 0; i < employeeCount; i++) {
+        if (employees[i].id == employeeId) {
+            int j;
+            for (j = i; j < employeeCount - 1; j++) {
+                employees[j] = employees[j + 1];
+            }
+            employeeCount--;
+
+            printf("Employee deleted successfully.\n");
+            return;
+        }
+    }
+
+    printf("Employee not found.\n");
+}
+
+void displayPayslip() {
+    printf("Displaying payslip...\n");
+
+    printf("Enter employee ID: ");
+    scanf("%d", &employeeId);
+
+    for (i = 0; i < employeeCount; i++) {
+        if (employees[i].id == employeeId) {
+            printf("Employee ID: %d\n", employees[i].id);
+            printf("Employee Name: %s\n", employees[i].name);
+            printf("Gross Pay: %.2f\n", grossPay);
+            printf("Deductions: %.2f\n", deductions);
+            printf("Adjustments: %.2f\n", adjustments);
+            printf("Net Pay: %.2f\n", netPay);
+
+            sprintf(fileName, "payslip_%d.txt", employees[i].id);
+            FILE *file = fopen(fileName, "w");
+            if (file == NULL) {
+                printf("Error creating file.\n");
+                return;
+            }
+
+            fprintf(file, "Employee ID: %d\n", employees[i].id);
+            fprintf(file, "Employee Name: %s\n", employees[i].name);
+            fprintf(file, "Gross Pay: %.2f\n", grossPay);
+            fprintf(file, "Deductions: %.2f\n", deductions);
+            fprintf(file, "Adjustments: %.2f\n", adjustments);
+            fprintf(file, "Net Pay: %.2f\n", netPay);
+
+            fclose(file);
+            printf("Payslip saved to file: %s\n", fileName);
+
+            return;
+        }
+    }
+
+    printf("Employee not found.\n");
+}
+
+void displayMenu() {
+    printf("\nPayroll Management System\n");
+    printf("1. Calculate Monthly Salary\n");
+    printf("2. Add New Employee\n");
+    printf("3. Update Employee Information\n");
+    printf("4. Search for Employee\n");
+    printf("5. Delete Employee\n");
+    printf("6. Display Payslip\n");
+    printf("7. Exit\n");
+    printf("Enter your choice: ");
+}
+
+int main() {
+    do {
+        displayMenu();
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                calculateSalary();
+                break;
+            case 2:
+                addEmployee();
+                break;
+            case 3:
+                updateEmployee();
+                break;
+            case 4:
+                searchEmployee();
+                break;
+            case 5:
+                deleteEmployee();
+                break;
+            case 6:
+                displayPayslip();
+                break;
+            case 7:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+                break;
+        }
+    } while (choice != 7);
+
+    return 0;
+}
